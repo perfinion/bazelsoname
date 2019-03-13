@@ -1,9 +1,37 @@
 
 cc_binary(
+    name = "libbar.so.1.13.0",
+    srcs = [
+        "bar.c",
+    ],
+    linkshared = 1,
+    linkopts = ["-Wl,-soname,libbar.so.1"],
+)
+
+genrule(
+    name = "libbar.so.1_sym",
+    outs = ["libbar.so.1"],
+    srcs = ["libbar.so.1.13.0"],
+    output_to_bindir = 1,
+    cmd = "ln -sf $$(basename $<) $@",
+)
+
+genrule(
+    name = "libbar.so_sym",
+    outs = ["libbar.so"],
+    srcs = ["libbar.so.1"],
+    output_to_bindir = 1,
+    cmd = "ln -sf $$(basename $<) $@",
+)
+
+
+cc_binary(
     name = "libfoo.so.1.13.0",
     srcs = [
         "foo.c",
+        "bar.h",
     ],
+    copts = ["-I."],
     linkshared = 1,
     linkopts = ["-Wl,-soname,libfoo.so.1"],
 )
@@ -30,8 +58,11 @@ cc_binary(
         "main.c",
         "foo.h",
         ":libfoo.so.1",
+        ":libbar.so.1",
     ],
+    copts = ["-I."],
     deps = [
         ":libfoo.so.1.13.0",
+        ":libbar.so.1.13.0",
     ],
 )
