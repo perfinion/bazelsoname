@@ -8,36 +8,36 @@ config_setting(
 )
 
 cc_binary(
-    name = "libbar.so.1.13.0",
+    name = "libbar.1.13.0.dylib",
     srcs = [
         "bar.c",
     ],
     linkshared = 1,
     linkopts = select({
-        ":macos": ["-Wl,-install_name,@rpath/libbar.so.1"],
+        ":macos": ["-Wl,-install_name,@rpath/libbar.1.dylib"],
         "//conditions:default": ["-Wl,-soname,libbar.so.1"],
     })
 )
 
 genrule(
     name = "libbar.so.1_sym",
-    outs = ["libbar.so.1"],
-    srcs = ["libbar.so.1.13.0"],
+    outs = ["libbar.1.dylib"],
+    srcs = ["libbar.1.13.0.dylib"],
     output_to_bindir = 1,
     cmd = "ln -sf $$(basename $<) $@",
 )
 
 genrule(
     name = "libbar.so_sym",
-    outs = ["libbar.so"],
-    srcs = ["libbar.so.1"],
+    outs = ["libbar.dylib"],
+    srcs = ["libbar.1.dylib"],
     output_to_bindir = 1,
     cmd = "ln -sf $$(basename $<) $@",
 )
 
 
 cc_binary(
-    name = "libfoo.so.1.13.0",
+    name = "libfoo.1.13.0.dylib",
     srcs = [
         "foo.c",
         "bar.h",
@@ -45,23 +45,23 @@ cc_binary(
     copts = ["-I."],
     linkshared = 1,
     linkopts = select({
-        ":macos": ["-Wl,-install_name,@rpath/libfoo.so.1"],
+        ":macos": ["-Wl,-install_name,@rpath/libfoo.1.dylib"],
         "//conditions:default": ["-Wl,-soname,libfoo.so.1"],
     })
 )
 
 genrule(
     name = "libfoo.so.1_sym",
-    outs = ["libfoo.so.1"],
-    srcs = ["libfoo.so.1.13.0"],
+    outs = ["libfoo.1.dylib"],
+    srcs = ["libfoo.1.13.0.dylib"],
     output_to_bindir = 1,
     cmd = "ln -sf $$(basename $<) $@",
 )
 
 genrule(
     name = "libfoo.so_sym",
-    outs = ["libfoo.so"],
-    srcs = ["libfoo.so.1"],
+    outs = ["libfoo.dylib"],
+    srcs = ["libfoo.1.dylib"],
     output_to_bindir = 1,
     cmd = "ln -sf $$(basename $<) $@",
 )
@@ -71,11 +71,11 @@ cc_binary(
     srcs = [
         "main.c",
         "foo.h",
-        ":libfoo.so.1",
-        ":libbar.so.1",
+        ":libfoo.1.dylib",
+        ":libbar.1.dylib",
     ],
     copts = ["-I."],
     deps = [
-        ":libfoo.so.1.13.0",
+        ":libfoo.1.13.0.dylib",
     ],
 )
